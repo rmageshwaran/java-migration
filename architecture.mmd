@@ -1,70 +1,53 @@
-%% Java 8 IoT Monolith Modernization - Architecture Diagrams
-
-%% Current State Architecture
 graph TD
-    subgraph "Current Java 8 Monolithic Architecture"
+    %% Current State vs Target State Architecture Comparison
+    subgraph Current["🔴 Current Java 8 Monolithic Architecture"]
         A[IoT Devices] -->|HTTP/MQTT| B[Load Balancer]
-        B --> C[Java 8 Monolith Application]
-        C --> D[Single Relational Database]
-        C --> E[File System Storage]
-        C --> F[Manual Deployment Process]
+        B --> C[Java 8 Monolith]
+        C --> D[Single Database]
+        C --> E[File Storage]
         
-        C --> G[Device Management]
-        C --> H[Data Processing]
-        C --> I[User Management]
-        C --> J[Reporting]
-        C --> K[Notifications]
-        
-        style C fill:#ffcccc
-        style D fill:#ffcccc
-        style F fill:#ffcccc
+        style C fill:#ffcccc,stroke:#d32f2f,stroke-width:3px
+        style D fill:#ffcccc,stroke:#d32f2f,stroke-width:2px
     end
-
-%% Target State Architecture
-graph TB
-    subgraph "Target Cloud-Native Microservice Architecture"
-        subgraph "Edge Layer"
+    
+    subgraph Target["🟢 Target Cloud-Native Microservice Architecture"]
+        subgraph Edge["Edge Layer"]
             AA[IoT Devices] 
             BB[Edge Gateways]
         end
         
-        subgraph "API Layer"
-            CC[API Gateway / Load Balancer]
-            DD[Service Mesh / Istio]
+        subgraph API["API Layer"]
+            CC[API Gateway]
+            DD[Service Mesh]
         end
         
-        subgraph "Microservices Layer"
-            EE[Device Management Service]
+        subgraph Services["Microservices Layer"]
+            EE[Device Mgmt Service]
             FF[Data Ingestion Service] 
             GG[Stream Processing Service]
-            HH[User Management Service]
+            HH[User Mgmt Service]
             II[Reporting Service]
             JJ[Notification Service]
         end
         
-        subgraph "Message Streaming"
+        subgraph Stream["Event Streaming"]
             KK[Apache Kafka]
         end
         
-        subgraph "Data Layer"
-            LL[Time-Series DB<br/>InfluxDB]
-            MM[Document Store<br/>MongoDB] 
-            NN[Relational DB<br/>PostgreSQL]
+        subgraph Data["Polyglot Data Layer"]
+            LL[Time-Series DB]
+            MM[Document Store] 
+            NN[Relational DB]
             OO[Redis Cache]
         end
         
-        subgraph "Infrastructure"
-            PP[Kubernetes Cluster]
+        subgraph Infra["Infrastructure"]
+            PP[Kubernetes]
             QQ[Container Registry]
             RR[CI/CD Pipeline]
         end
         
-        subgraph "Observability"
-            SS[Prometheus<br/>Monitoring]
-            TT[ELK Stack<br/>Logging]
-            UU[Jaeger<br/>Tracing]
-        end
-        
+        %% Connections
         AA --> BB
         BB --> CC
         CC --> DD
@@ -83,203 +66,18 @@ graph TB
         FF --> LL
         GG --> LL
         HH --> NN
-        II --> LL
         II --> NN
-        
         EE --> OO
         HH --> OO
         
-        style AA fill:#e1f5fe
-        style CC fill:#c8e6c9
-        style EE fill:#c8e6c9
-        style FF fill:#c8e6c9
-        style GG fill:#c8e6c9
-        style HH fill:#c8e6c9
-        style II fill:#c8e6c9
-        style JJ fill:#c8e6c9
-        style KK fill:#fff3e0
-        style PP fill:#f3e5f5
-    end
-
-%% Migration Strategy Flow
-graph LR
-    subgraph "Migration Phases"
-        A1[Phase 1: Foundation<br/>Java 21 + Infrastructure]
-        A2[Phase 2: Data Modernization<br/>Event Streaming + Polyglot DB]
-        A3[Phase 3: Service Extraction<br/>Strangler Fig Pattern]
-        A4[Phase 4: Advanced Capabilities<br/>Auto-scaling + Edge Computing]
-        
-        A1 --> A2 --> A3 --> A4
-        
-        style A1 fill:#ffecb3
-        style A2 fill:#c8e6c9
-        style A3 fill:#e1f5fe
-        style A4 fill:#f8bbd9
-    end
-
-%% Strangler Fig Pattern Implementation
-graph TD
-    subgraph "Strangler Fig Migration Pattern"
-        B1[Legacy Monolith] 
-        B2[API Gateway / Router]
-        B3[New Microservice 1]
-        B4[New Microservice 2]
-        B5[New Microservice N]
-        
-        B6[External Clients]
-        
-        B6 --> B2
-        B2 -->|Route Legacy Traffic| B1
-        B2 -->|Route New Traffic| B3
-        B2 -->|Route New Traffic| B4
-        B2 -->|Route New Traffic| B5
-        
-        style B1 fill:#ffcccc
-        style B2 fill:#fff3e0
-        style B3 fill:#c8e6c9
-        style B4 fill:#c8e6c9
-        style B5 fill:#c8e6c9
-    end
-
-%% Data Flow Architecture
-graph LR
-    subgraph "IoT Data Processing Flow"
-        C1[IoT Sensors] -->|Raw Data| C2[Data Ingestion Service]
-        C2 -->|Validated Data| C3[Kafka Streaming Platform]
-        C3 -->|Real-time Stream| C4[Stream Processing Service]
-        C3 -->|Historical Data| C5[Time-Series Database]
-        C4 -->|Processed Events| C6[Notification Service]
-        C4 -->|Analytics| C7[Reporting Service]
-        C5 -->|Historical Queries| C7
-        
-        style C3 fill:#fff3e0
-        style C4 fill:#c8e6c9
-        style C5 fill:#e8f5e8
-    end
-
-%% Service Dependencies
-graph TD
-    subgraph "Microservices Dependency Graph"
-        D1[API Gateway]
-        D2[User Management Service]
-        D3[Device Management Service]
-        D4[Data Ingestion Service]
-        D5[Stream Processing Service]
-        D6[Reporting Service] 
-        D7[Notification Service]
-        
-        D1 --> D2
-        D1 --> D3
-        D1 --> D4
-        D1 --> D6
-        
-        D3 --> D2
-        D4 --> D3
-        D5 --> D4
-        D6 --> D2
-        D6 --> D5
-        D7 --> D2
-        D7 --> D5
-        
-        style D2 fill:#ffecb3
-        style D3 fill:#c8e6c9
-        style D4 fill:#e1f5fe
-        style D5 fill:#f3e5f5
-        style D6 fill:#fff3e0
-        style D7 fill:#fce4ec
-    end
-
-%% Deployment Pipeline
-graph LR
-    subgraph "CI/CD Pipeline Architecture"
-        E1[Developer Commit] --> E2[Git Repository]
-        E2 --> E3[CI Pipeline<br/>Build + Test]
-        E3 --> E4[Container Registry]
-        E4 --> E5[Kubernetes Deployment]
-        E5 --> E6[Service Mesh Integration]
-        E6 --> E7[Monitoring & Alerting]
-        
-        E8[Feature Flags] --> E5
-        E9[Blue-Green Deployment] --> E5
-        E10[Canary Releases] --> E5
-        
-        style E3 fill:#c8e6c9
-        style E5 fill:#e1f5fe
-        style E7 fill:#fff3e0
-    end
-
-%% Security Architecture
-graph TD
-    subgraph "Security & Compliance Architecture"
-        F1[API Gateway<br/>Rate Limiting + WAF]
-        F2[OAuth 2.0 / OIDC<br/>Identity Provider]
-        F3[Service Mesh<br/>mTLS + RBAC]
-        F4[Secrets Management<br/>Kubernetes Secrets]
-        F5[Network Policies<br/>Zero Trust]
-        F6[Audit Logging<br/>Compliance]
-        
-        F1 --> F2
-        F1 --> F3
-        F3 --> F4
-        F3 --> F5
-        F2 --> F6
-        F3 --> F6
-        
-        style F2 fill:#ffecb3
-        style F3 fill:#c8e6c9
-        style F5 fill:#f3e5f5
-        style F6 fill:#fff3e0
-    end
-
-%% Monitoring & Observability
-graph TB
-    subgraph "Three Pillars of Observability"
-        subgraph "Metrics"
-            G1[Prometheus] --> G2[Custom Business Metrics]
-            G1 --> G3[Infrastructure Metrics] 
-            G1 --> G4[Application Metrics]
-        end
-        
-        subgraph "Logging"
-            G5[Fluentd/Fluent Bit] --> G6[Elasticsearch]
-            G6 --> G7[Kibana Dashboards]
-            G6 --> G8[Log Aggregation]
-        end
-        
-        subgraph "Tracing"
-            G9[Jaeger] --> G10[Distributed Tracing]
-            G9 --> G11[Service Dependencies]
-            G9 --> G12[Performance Analysis]
-        end
-        
-        subgraph "Alerting"
-            G13[AlertManager] --> G14[PagerDuty]
-            G13 --> G15[Slack Notifications]
-            G13 --> G16[Email Alerts]
-        end
-        
-        G1 --> G13
-        G6 --> G13
-        G9 --> G13
-        
-        style G1 fill:#c8e6c9
-        style G6 fill:#e1f5fe
-        style G9 fill:#f3e5f5
-        style G13 fill:#fff3e0
-    end
-
-%% Cost Optimization Architecture
-graph LR
-    subgraph "Cost Optimization Strategies"
-        H1[Horizontal Pod Autoscaler] --> H2[CPU/Memory Based Scaling]
-        H3[Vertical Pod Autoscaler] --> H4[Right-sizing Containers]
-        H5[Cluster Autoscaler] --> H6[Node Pool Management]
-        H7[Spot Instances] --> H8[Cost-effective Computing]
-        H9[Resource Quotas] --> H10[Multi-tenancy Efficiency]
-        
-        style H1 fill:#c8e6c9
-        style H3 fill:#e1f5fe
-        style H5 fill:#f3e5f5
-        style H7 fill:#fff3e0
-        style H9 fill:#ffecb3
+        %% Styling
+        style CC fill:#4caf50,stroke:#2e7d32,stroke-width:2px
+        style EE fill:#81c784,stroke:#4caf50,stroke-width:2px
+        style FF fill:#81c784,stroke:#4caf50,stroke-width:2px
+        style GG fill:#81c784,stroke:#4caf50,stroke-width:2px
+        style HH fill:#81c784,stroke:#4caf50,stroke-width:2px
+        style II fill:#81c784,stroke:#4caf50,stroke-width:2px
+        style JJ fill:#81c784,stroke:#4caf50,stroke-width:2px
+        style KK fill:#ffc107,stroke:#f57f17,stroke-width:3px
+        style PP fill:#9c27b0,stroke:#6a1b9a,stroke-width:2px
     end

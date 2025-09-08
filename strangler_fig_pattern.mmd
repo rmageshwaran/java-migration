@@ -1,0 +1,23 @@
+graph TD
+    %% Strangler Fig Migration Pattern
+    subgraph pattern["Strangler Fig Migration Strategy"]
+        B6[External Clients<br/>IoT Devices & Users]
+        B2[API Gateway / Router<br/>Traffic Distribution]
+        B1[Legacy Java 8 Monolith<br/>Gradually Reduced Traffic] 
+        B3[Device Management<br/>Microservice]
+        B4[Data Ingestion<br/>Microservice]
+        B5[Stream Processing<br/>Microservice]
+        
+        B6 --> B2
+        B2 -->|Legacy Traffic<br/>Decreasing %| B1
+        B2 -->|New Traffic<br/>Increasing %| B3
+        B2 -->|New Traffic<br/>Increasing %| B4
+        B2 -->|New Traffic<br/>Increasing %| B5
+        
+        style B1 fill:#ffcccc,stroke:#d32f2f,stroke-width:2px
+        style B2 fill:#fff3e0,stroke:#f57f17,stroke-width:3px
+        style B3 fill:#c8e6c9,stroke:#4caf50,stroke-width:2px
+        style B4 fill:#c8e6c9,stroke:#4caf50,stroke-width:2px
+        style B5 fill:#c8e6c9,stroke:#4caf50,stroke-width:2px
+        style B6 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    end
